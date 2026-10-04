@@ -1,9 +1,12 @@
 name: CD Release Pipeline
 
 on:
-  create:
+  push:
     tags:
-      - 'v*.*.*' # Trigger cuando se crea un tag (ej. v1.0.0)
+      - 'v*.*.*' # Trigger cuando se pushea un tag (ej. v1.0.0)
+
+permissions:
+  contents: write # Necesario para crear el release
 
 jobs:
   create-github-release:
@@ -15,14 +18,12 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: softprops/action-gh-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
-          release_name: Release ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
           body: |
-            Nueva versión liberada: ${{ github.ref }}
+            Nueva versión liberada: ${{ github.ref_name }}
             Este release fue generado automáticamente por el pipeline de CD.
           draft: false
           prerelease: false
